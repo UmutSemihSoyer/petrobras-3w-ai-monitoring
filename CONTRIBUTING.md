@@ -1,0 +1,174 @@
+[![Apache 2.0][apache-shield]][apache] 
+[![CC BY 4.0][cc-by-shield]][cc-by]
+[![Code style][ruff-shield]][ruff]
+[![Versioning][semver-shield]][semver]
+
+[apache]: https://opensource.org/licenses/Apache-2.0
+[apache-shield]: https://img.shields.io/badge/License-Apache_2.0-blue.svg
+[cc-by]: http://creativecommons.org/licenses/by/4.0/
+[cc-by-shield]: https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg
+[ruff]: https://github.com/astral-sh/ruff
+[ruff-shield]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json
+[semver]: https://semver.org
+[semver-shield]: https://img.shields.io/badge/semver-2.0.1-blue
+
+# Welcome to the 3W Project contributing guide
+
+:+1::tada::sparkles: Thank you for investing your time in contributing to the 3W Project! :sparkles::tada::+1:
+
+We expect to receive various types of contributions from individuals, research institutions, startups, companies and partner oil operators. 
+
+In this guide we present how you can propose each type of contributions that we expect.
+
+# Table of Content
+
+* [Getting started](#getting-started)
+* [Making questions](#making-questions)
+* [Before contributing](#before-contributing)
+    * [Levels for contributions](#levels-for-contributions)
+    * [3W Dataset's structure](#3w-datasets-structure)
+    * [3W Toolkit's structure](#3w-toolkits-structure)
+    * [3W Toolkit's contributing guide](#3w-toolkits-contributing-guide)
+    * [Jupyter Notebooks](#jupyter-notebooks)
+    * [Executing examples](#executing-examples)
+* [Proposing contributions](#proposing-contributions)
+    * [Citation](#citation)
+    * [Bugs](#bugs)
+    * [Documentation improvements](#documentation-improvements)
+    * [Cosmetic improvements](#cosmetic-improvements)
+    * [Other improvements](#other-improvements)
+    * [New 3W Dataset's overviews](#new-3w-datasets-overviews)
+    * [New approaches and algorithms](#new-approaches-and-algorithms)
+    * [Additional requirements](#additional-requirements)
+* [Backlog](#backlog)
+
+# Getting started
+
+The recommended first step is to read this [README](README.md) for an overview of the 3W Project.
+
+# Making questions
+
+Please do not open an issue to ask questions. Click on the Discussions link that appears in the top menu. If you don't get clarification, please open discussions to ask your questions so we can answer them.
+
+# Before contributing
+
+Before you can contribute to this project, you need to read and agree to the following documents:
+
+* [CODE OF CONDUCT](CODE_OF_CONDUCT.md);
+* [CONTRIBUTOR LICENSE AGREEMENT](CONTRIBUTOR_LICENSE_AGREEMENT.md);
+* This contributing guide.
+
+It is also very important to know, participate and follow the discussions. Click on the Discussions link that appears in the top menu.
+
+## Levels for contributions
+
+We expect to receive contributions at different levels, as shown in the figure below. Objects with background in yellow indicate types of contributions enabled by the 3W Project current version. The other objects above the 3W Project indicate types of contributions that will be enabled in the next versions. Some examples of contributions at each level are:
+
+* Level 1: 
+    * You can identify and report issues with data or annotations;
+    * You can propose adding real, simulated or hand-drawn instances.
+* Level 2:
+    * You can identify, report and fix bugs;
+    * You can propose documentation improvements;
+    * You can recommend new specific problems.
+* Level 3:
+    * You can develop and propose approaches and algorithms for already incorporated problems;
+    * You can elaborate and send us new overviews;
+    * You can idealize, develop and propose new useful tools.
+* Level 4:
+    * You can develop and submit us ensemble methods;
+    * You can generate and propose more complex and complete tools.
+* Level n:
+    * We see no limit to the levels for contributions.
+
+![Levels for contributions](images/levels_for_contributions.png)
+
+## 3W Dataset's structure
+
+At level 1, the 3W Dataset consists of multiple Parquet files saved in subdirectories of the [dataset](dataset) directory and structured as detailed [here](3W_DATASET_STRUCTURE.md). 
+
+## 3W Toolkit's structure
+
+At level 2, the 3W Toolkit is implemented in sub-modules as described [here](3W_TOOLKIT_STRUCTURE.md).
+
+## 3W Toolkit's contributing guide
+
+If your contribution changes the 3W Toolkit source code, tests, demos, or developer workflow, please also read the [3W Toolkit contributing guide](3W_TOOLKIT_CONTRIBUTING.md). It describes the toolkit architecture, expected extension patterns, testing guidelines, and quality checks for contributions under `3W/toolkit/`, `3W/tests/`, and related toolkit examples.
+
+## Jupyter Notebooks 
+
+Jupyter Notebooks play an important role in the 3W Project as a way to demonstrate usage, explore datasets, and present complete experimental pipelines. To keep the project organized, please follow this structure:
+
+- **Toolkit demos**  
+  Add notebooks demonstrating how to use the toolkit in `3W/toolkit/demos/`.
+
+- **Dataset exploration**  
+  Add notebooks for dataset usage, exploratory analyses, and dataset overviews in `3W/dataset/demos/`. When adding a contributor-specific overview, use a dedicated subdirectory such as `3W/dataset/demos/[your_name_here]/main.ipynb`.
+
+- **Benchmarks**  
+  Add complete and independent benchmarking projects in `3W/benchmarks/`.
+
+- **Learning resources and tutorials**
+  Add self-contained educational material, tutorials, and course-style notebooks in `3W/resources/`, preferably under a versioned or topic-specific subdirectory.
+
+- **Technical documents**  
+  The `3W/docs/` folder is reserved for academic materials such as papers, theses in `.pdf` format. Do not place notebooks here.
+
+## Executing examples
+
+To execute examples of how to use the 3W Toolkit available in this repository, see the instructions related to [reproducibility](README.md#reproducibility).
+ 
+# Proposing contributions
+
+We seek to adopt trunk-based development. [This article](https://www.atlassian.com/continuous-delivery/continuous-integration/trunk-based-development) explains some of the justifications and benefits of this practice.
+
+For each type of expected contribution, there is a subsection below with specific instructions. The last subsection specifies additional requirements for contributions to be incorporated into this project.
+
+## Citation
+
+As far as we know, 3W Project's resources (3W Dataset and 3W Toolkit) were useful and are cited by the works listed [here](LISTS_OF_CITATIONS.md).
+
+If you know any other published work (not covered in this document) that cites the 3W Project itself and/or its main resources, we will be grateful if you let us know by adding a comment [this discussion](https://github.com/Petrobras/3W/discussions/3).
+
+If you wish to cite the 3W Project itself and/or its main resources, please refer to our suggestions at [CITATION.md](CITATION.md).
+
+## Bugs
+
+Please open an **issue** to report any bug. If you've implemented a fix, please create a **pull request** on a branch called `bugs`.
+
+## Documentation improvements
+
+We believe that any part of the documentation for this project can be improved, including this guide. You can work on that and then create a **pull requests** on a branch called `documentation_improvements` directly.
+
+It is important to keep in mind that this toolkit's documentation is generated in english and in Google format with [autoDocstring - Python Docstring Generator](https://github.com/NilsJPWerner/autoDocstring), which follows [PEP 257](https://peps.python.org/pep-0257/), and [pdoc3](https://pdoc3.github.io/pdoc/).
+
+## Cosmetic improvements
+
+Changes that are cosmetic in nature and do not add anything substantial to the stability, functionality, or testability of the 3W Project are also welcome. In this case, please create a **pull requests** on a branch called `cosmetic_improvements` directly.
+
+## Other improvements
+
+If you intend to work and propose a more significant improvement, please consult our [backlog](BACKLOG.md) first. If you have any questions about the most aligned strategy for the 3W Project, please consult or create **discussions**. When your improvement is ready, please create a **pull request** on a branch called `other_improvements`.
+
+It is important to keep in mind that all source code is implemented according to the style guide established by [PEP 8](https://peps.python.org/pep-0008/). This is guaranteed with the use of [Ruff](https://github.com/astral-sh/ruff)'s formatter (`ruff format`) with default options. Therefore, while codes have lines up to 88 characters (Ruff formatter's default option), each line with docstring or comment must be up to 72 characters long as established in PEP 8.
+
+## New 3W Dataset's overviews
+
+Visualization is one of the most important steps in this type of project. Therefore, you can propose [Jupyter Notebooks](https://jupyter.org/) with different views of the 3W Dataset. For this, submit a **pull request** on a branch called `new_3w_datasets_overviews` with a notebook in `3W/dataset/demos/[your_name_here]/main.ipynb`. If we like your overview, your file could be listed in this repository as a 3W Dataset overview.
+
+## New approaches and algorithms
+
+Would you like to share approaches and algorithms for already incorporated problems in this repository? The procedure for this is to submit a **pull request** on a branch called `new_approaches_and_algorithms`. Use `3W/toolkit/demos/` for notebooks that demonstrate how to use the 3W Toolkit, `3W/benchmarks/` for complete and independent benchmarking projects, and `3W/resources/` for educational or tutorial material. Contributions that add reusable toolkit code should follow the [3W Toolkit contributing guide](3W_TOOLKIT_CONTRIBUTING.md).
+
+Specific benchmarks will be incorporated into this project gradually. All benchmarks will be included in the folder `3W/benchmarks/`.
+
+## Additional requirements
+
+Here are additional requirements for contributions to be incorporated into this project:
+
+* As the forking workflow is used, every PR needs to be generated in a fork. A tutorial about different Git Workflows is available [here](https://www.atlassian.com/git/tutorials/comparing-workflows#centralized-workflow); 
+* PRs will only be accepted if they pass the checks automatically performed by the GitHub Action specified in [tests.yml](.github/workflows/tests.yml), which runs [`bin/lint`](bin/lint). If this check fails, check the generated log, run `./bin/lint` locally to format and fix the files as needed, then generate another PR.
+
+# Backlog
+
+The list of priority improvements for the 3W Project that we intend to develop collaboratively with the community is detailed in the file [BACKLOG.md](BACKLOG.md).

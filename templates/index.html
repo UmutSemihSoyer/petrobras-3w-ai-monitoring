@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petrobras 3W - Offshore Oil Well Anomaly & Transient Monitoring</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Top Navigation Header -->
+    <header class="app-header">
+        <div class="logo-area">
+            <div class="logo-icon"><i class="fa-solid me-2 fa-oil-well"></i></div>
+            <div>
+                <h1>PETROBRAS 3W <span>MONITOR</span></h1>
+                <p>Offshore Well Transient & Anomaly AI Classifier</p>
+            </div>
+        </div>
+        <div class="header-badges">
+            <div class="status-badge live">
+                <span class="pulse-dot"></span> AI ENGINE ONLINE
+            </div>
+            <div class="model-badge">
+                <i class="fa-solid fa-brain"></i> <span id="model-name-display">XGBoost (93.87%)</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="app-container">
+        <!-- Sidebar Controls -->
+        <aside class="sidebar">
+            <div class="section-card">
+                <h3><i class="fa-solid fa-list-check"></i> Olay Sınıfı Seçimi</h3>
+                <div class="form-group">
+                    <label for="class-select">3W Event Sınıfı:</label>
+                    <select id="class-select" class="form-select">
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="file-select">Zaman Serisi Dosyası (.parquet):</label>
+                    <select id="file-select" class="form-select">
+                        <option value="">Dosya seçiniz...</option>
+                    </select>
+                </div>
+                <button id="btn-load-data" class="btn btn-primary w-100">
+                    <i class="fa-solid fa-chart-line"></i> Sinyal Verisini Yükle
+                </button>
+            </div>
+
+            <!-- AI Prediction Card -->
+            <div class="section-card prediction-card" id="ai-prediction-box">
+                <h3><i class="fa-solid fa-robot"></i> AI Tespiti & Tahmin</h3>
+                <div class="pred-empty-state" id="pred-empty">
+                    <i class="fa-solid fa-microchip text-muted"></i>
+                    <p>Lütfen bir zaman serisi dosyası yükleyin.</p>
+                </div>
+                <div class="pred-result-state hidden" id="pred-result">
+                    <div class="pred-header">
+                        <span class="severity-badge" id="pred-severity">CRITICAL</span>
+                        <span class="conf-badge" id="pred-confidence">%98.5 Güven</span>
+                    </div>
+                    <h4 id="pred-class-name">Hydrate in Production Line</h4>
+                    <p class="pred-desc" id="pred-desc">Üretim hattında gaz-hidrat kristalleşmesi riski.</p>
+                    <div class="match-status" id="pred-match-status">
+                        <i class="fa-solid fa-circle-check"></i> Gerçek Etiket ile Eşleşiyor
+                    </div>
+                    <div class="action-buttons mt-3">
+                        <button id="btn-export-pdf" class="btn btn-sm btn-primary w-100" style="margin-top: 0.75rem;">
+                            <i class="fa-solid fa-file-pdf"></i> PDF Teşhis Raporu İndir
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Simulation Controls -->
+            <div class="section-card">
+                <h3><i class="fa-solid fa-play"></i> Canlı Kuyu Simülatörü</h3>
+                <div class="playback-controls">
+                    <button id="btn-play" class="btn btn-sm btn-success"><i class="fa-solid fa-play"></i> Başlat</button>
+                    <button id="btn-pause" class="btn btn-sm btn-secondary"><i class="fa-solid fa-pause"></i> Durdur</button>
+                    <button id="btn-reset" class="btn btn-sm btn-danger"><i class="fa-solid fa-rotate-left"></i> Sıfırla</button>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" id="sim-progress" style="width: 0%;"></div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Dashboard View -->
+        <section class="dashboard-content">
+            <!-- Metric Cards Row -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-title"><i class="fa-solid fa-gauge-high"></i> Kuyu Dibi Basınç (P-PDG)</div>
+                    <div class="metric-value" id="val-p-pdg">--- <small>bar</small></div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title"><i class="fa-solid fa-temperature-three-quarters"></i> Kuyu Başı Sıcaklık (T-TPT)</div>
+                    <div class="metric-value" id="val-t-tpt">--- <small>°C</small></div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title"><i class="fa-solid fa-compress"></i> Şok Vana Memba Basıncı</div>
+                    <div class="metric-value" id="val-p-mon-ckp">--- <small>bar</small></div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title"><i class="fa-solid fa-clock"></i> Veri Noktası Sayısı</div>
+                    <div class="metric-value" id="val-total-points">0</div>
+                </div>
+            </div>
+
+            <!-- Charts Container -->
+            <div class="charts-container">
+                <!-- Pressure Chart -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <span class="chart-title"><i class="fa-solid fa-chart-area"></i> Basınç Profil Sinyalleri (P-PDG, P-TPT, P-MON-CKP)</span>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="pressureChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Temperature Chart -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <span class="chart-title"><i class="fa-solid fa-chart-line"></i> Sıcaklık Profil Sinyalleri (T-TPT, T-JUS-CKP)</span>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="temperatureChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Target Label Chart -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <span class="chart-title"><i class="fa-solid fa-tags"></i> Zaman Serisi Hedef Etiketi (Class & State)</span>
+                    </div>
+                    <div class="chart-wrapper" style="height: 180px;">
+                        <canvas id="labelChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
