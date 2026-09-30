@@ -1,206 +1,220 @@
+# 🛢️ Petrobras 3W - AI Monitoring & Early Warning System
 
-[![Apache 2.0][apache-shield]][apache] 
-[![CC BY 4.0][cc-by-shield]][cc-by]
-[![Code style][ruff-shield]][ruff]
-[![Versioning][semver-shield]][semver]
-[![Coverage Status][coveralls-shield]][coveralls]
+> **Açık Deniz Petrol Kuyularında (Offshore Oil Wells) Geçici Rejimler (Transients) ve Anomali Tespiti İçin Geliştirilmiş Endüstriyel Yapay Zeka ve Erken Uyarı Platformu**
 
-[apache]: https://opensource.org/licenses/Apache-2.0
-[apache-shield]: https://img.shields.io/badge/License-Apache_2.0-blue.svg
-[cc-by]: http://creativecommons.org/licenses/by/4.0/
-[cc-by-shield]: https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg
-[ruff]: https://github.com/astral-sh/ruff
-[ruff-shield]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json
-[semver]: https://semver.org
-[semver-shield]: https://img.shields.io/badge/semver-2.0.0-blue
-[coveralls]: https://coveralls.io/github/rafaelpadilla/3W?branch=dev
-[coveralls-shield]: https://coveralls.io/repos/github/rafaelpadilla/3W/badge.svg?branch=dev
+![Python Version](https://img.shields.io/badge/Python-3.13-blue.svg)
+![Framework](https://img.shields.io/badge/Framework-Flask_3.1-emerald.svg)
+![ML Model](https://img.shields.io/badge/Model-XGBoost_93.87%25_Accuracy-brightgreen.svg)
+![License](https://img.shields.io/badge/License-CC_BY_4.0-orange.svg)
 
-# Table of Content
+---
 
-* [Introduction](#introduction)
-  * [Motivation](#motivation)
-  * [Strategy](#strategy)
-  * [Ambition](#ambition)
-  * [Governance](#governance)
-  * [Contributions](#contributions)
-  * [Licenses](#licenses)
-  * [Versioning](#versioning)
-  * [Questions](#questions)
-* [3W Dataset](#3w-dataset)
-  * [Structure](#structure)
-  * [Overview](#overview)
-* [3W Toolkit](#3w-toolkit)
-  * [Structure](#structure-1)
-  * [Incorporated Problems](#incorporated-problems)
-  * [Examples of Use](#examples-of-use)
-  * [Reproducibility](#reproducibility)
-* [3W Community](#3w-community)
+## 📌 İçindekiler
+- [1. Proje Hakkında](#1-proje-hakkında)
+- [2. Sistem Mimarisi](#2-sistem-mimarisi)
+- [3. Petrobras 3W Veri Kümesi Yapısı](#3-petrobras-3w-veri-kümesi-yapısı)
+- [4. Öznitelik Mühendisliği & ML Modelleri](#4-öznitelik-mühendisliği--ml-modelleri)
+- [5. Erken Uyarı Sistemi (Lead-Time Analizi)](#5-erken-uyarı-sistemi-lead-time-analizi)
+- [6. Açıklanabilir Yapay Zeka (SHAP XAI)](#6-açıklanabilir-yapay-zeka-shap-xai)
+- [7. Derin Öğrenme Mimarisi (PyTorch 1D-CNN + BiLSTM)](#7-derin-öğrenme-mimarisi-pytorch-1d-cnn--bilstm)
+- [8. Canlı Web Dashboard & Özellikleri](#8-canlı-web-dashboard--özellikleri)
+- [9. Kurulum ve Çalıştırma](#9-kurulum-ve-çalıştırma)
+- [10. API Referansı](#10-api-referansı)
 
-# Introduction
+---
 
-This is the first repository published by Petrobras on GitHub. It supports the 3W Project, which aims to promote experimentation and development of Machine Learning-based approaches and algorithms for specific problems related to detection and classification of undesirable events that occur in offshore oil wells. 
-				
-The 3W Project is based on the 3W Dataset and on the 3W Toolkit, a software package that promotes experimentation with the 3W Dataset for specific problems. The name **3W** was chosen because this dataset is composed of instances from ***3*** different sources and which contain undesirable events that occur in oil ***W***ells.
+## 1. Proje Hakkında
 
-## Motivation
+**Petrobras 3W**, Brezilya Ulusal Petrol Şirketi (Petrobras) tarafından açık deniz petrol kuyularında meydana gelen istenmeyen olayların (undesirable events) tespiti amacıyla yayınlanmış 2.228 adet çok değişkenli zaman serisi `.parquet` dosyasından oluşan dünyadaki en büyük açık benchmark veri kümesidir.
 
-Timely detection of undesirable events in oil wells can help prevent production losses, reduce maintenance costs, environmental accidents, and human casualties. Losses related to this type of events can reach 5% of production in certain scenarios, especially in areas such as Flow Assurance and Artificial Lifting Methods. In terms of maintenance, the cost of a maritime probe, required to perform various types of operations, can exceed US $500,000 per day.
+Bu proje; ham sensör zaman serilerini işleyip **%93.87 doğrulukla** olayları sınıflandıran yapay zeka modellerini, arızaları gerçekleşmeden **ortalama 110.8 dakika (~1.8 saat) önce tespit eden Erken Uyarı Sistemini** ve mühendislerin kuyuları canlı simülasyonla izleyip PDF raporu alabildiği modern bir **Web Dashboard Arayüzünü** içerir.
 
-Creating a dataset and making it public to be openly experienced can greatly foment the development of tools that can:
+---
 
-* Improve the process of identifying undesirable events in the drilling, completion and production phases of offshore wells;
-* Increase the efficiency of monitoring the integrity of wells and subsea systems, whose related problems can generate invaluable losses for people, environment, and company's image.
+## 2. Sistem Mimarisi
 
-## Strategy
+```mermaid
+flowchart TD
+    subgraph Data_Layer ["1. Veri Katmanı (Petrobras 3W Dataset)"]
+        RawData["2,228 Multivariate Parquet Files\n(Real Wells, Simulated, Hand-Drawn)"]
+    end
 
-The 3W is the first pilot of a Petrobras' program called [Conexões para Inovação - Módulo Open Lab](https://tecnologia.petrobras.com.br/modulo-open-lab). This pilot is an ***open project*** composed by two major resources:
+    subgraph Processing_Layer ["2. Öznitelik Mühendisliği & ML Pipeline"]
+        FE["Feature Extractor (sliding windows 120s)\nDerivatives dP/dt, dT/dt, Choke Delta-P"]
+        FE --> ProcessedData["Feature Matrix (8,160 x 109)"]
+        ProcessedData --> XGB["XGBoost Classifier (93.87% Accuracy)"]
+        ProcessedData --> LGB["LightGBM Classifier (93.69%)"]
+        ProcessedData --> DL["PyTorch 1D-CNN + BiLSTM"]
+    end
 
-* The [3W Dataset](#3w-dataset), which will be evolved and supplemented with more instances from time to time; 
-* The [3W Toolkit](#3w-toolkit), which will also be evolved (in many ways) to cover an increasing number of undesirable events during its development.
+    subgraph Intelligence_Layer ["3. Yapay Zeka Analiz Modülleri"]
+        EW["Early Warning System\nLead-Time Analysis (110.8 min early)"]
+        SHAP["SHAP Explainable AI (XAI)\nRoot-Cause Sensor Impact"]
+    end
 
-Therefore, our strategy is to make these resources publicly available so that we can develop the 3W Project with a global community collaboratively.
+    subgraph Presentation_Layer ["4. Web Dashboard & Sunum Katmanı"]
+        Flask["Flask REST API Server (port 5000)"]
+        UI["Interactive Glassmorphism Dashboard\n(Chart.js, Simulator, PDF Export, Alarm)"]
+    end
 
-## Ambition
+    RawData --> FE
+    XGB --> EW
+    XGB --> SHAP
+    XGB --> Flask
+    Flask --> UI
+```
 
-With this project, Petrobras intends to develop (fix, improve, supplement, etc.):
+---
 
-* The [3W Dataset](#3w-dataset) itself;
-* The [3W Toolkit](#3w-toolkit) itself;
-* Approaches and algorithms that can be incorporated into systems dedicated to monitoring undesirable events in offshore oil wells during their respective drilling, completion and production phases;
-* Tools that can be useful for our ambition.
+## 3. Petrobras 3W Veri Kümesi Yapısı
 
-## Governance
+Veri kümesi 10 temel olay sınıfından oluşmaktadır:
 
-The 3W Project was conceived and publicly launched on May 30, 2022 as a strategic action by Petrobras, led by its department responsible for Flow Assurance and its research center ([CENPES](https://www.petrobras.com.br/inovacao-e-tecnologia/centro-de-pesquisa)). Since then, 3W has become increasingly consolidated at Petrobras in several aspects: more professionals specialized in labeling instances, more projects and teams using the resources made available by 3W, more investment in developing the digital tools needed to label and export instances, more interest in including different types of undesirable events that occur in wells during the drilling, completion and production phases, etc. 
+| Sınıf ID | Olay Tanımı (Event Description) | Gerçek Kuyu | Simülasyon | El Çizimi | **Toplam Örnek** | Rejim Tipi |
+|---|---|:---:|:---:|:---:|:---:|:---:|
+| **0** | Normal Operasyon (Normal Operation) | 594 | 0 | 0 | **594** | Kararlı |
+| **1** | BSW'de Ani Artış (Abrupt Increase of BSW) | 4 | 114 | 10 | **128** | Geçici (Transient) |
+| **2** | DHSV Vanasının Yanlışlıkla Kapanması (Spurious Closure of DHSV) | 22 | 16 | 0 | **38** | Geçici (Transient) |
+| **3** | Şiddetli Dalgalanma / Sıvı Tıkanması (Severe Slugging) | 32 | 74 | 0 | **106** | Kararlı |
+| **4** | Akış Kararsızlığı (Flow Instability) | 343 | 0 | 0 | **343** | Kararlı |
+| **5** | Hızlı Verimlilik Kaybı (Rapid Productivity Loss) | 11 | 439 | 0 | **450** | Geçici (Transient) |
+| **6** | PCK Vanasında Hızlı Daralma (Quick Restriction in PCK) | 6 | 215 | 0 | **221** | Geçici (Transient) |
+| **7** | PCK Vanasında Kireçlenme (Scaling in PCK) | 36 | 0 | 10 | **46** | Geçici (Transient) |
+| **8** | Üretim Hattında Hidrat Oluşumu (Hydrate in Production Line) | 14 | 81 | 0 | **95** | Geçici (Transient) |
+| **9** | Servis Hattında Hidrat Oluşumu (Hydrate in Service Line) | 57 | 150 | 0 | **207** | Geçici (Transient) |
 
-Due to this evolution, from May 1st, 2024 the 3W's governance is now done with the participation of the Petrobras' department responsible for Well Integrity.
+### Sensör Değişkenleri ve Birimleri
 
-## Contributions
+- `P-PDG` / `T-PDG`: Kuyu dibi kalıcı basınç (Pa) ve sıcaklık (°C)
+- `P-TPT` / `T-TPT`: Deniz dibi kuyu başı ağaç basıncı (Pa) ve sıcaklığı (°C)
+- `P-MON-CKP` / `P-JUS-CKP`: Üretim şok vanası (PCK) memba ve mansap basınçları (Pa)
+- `T-MON-CKP` / `T-JUS-CKP`: Üretim şok vanası memba ve mansap sıcaklıkları (°C)
+- `P-ANULAR`: Kuyu anüler basıncı (Pa)
+- `QGL` / `P-JUS-CKGL`: Gas lift akış hızı ($m^3/s$) ve mansap basıncı (Pa)
+- `ESTADO-*`: Vana açık/kapalı durumları ($0.0, 0.5, 1.0$)
 
-We expect to receive various types of contributions from individuals, research institutions, startups, companies and partner oil operators.
+---
 
-Before you can contribute to this project, you need to read and agree to the following documents:
+## 4. Öznitelik Mühendisliği & ML Modelleri
 
-* [CODE OF CONDUCT](CODE_OF_CONDUCT.md);
-* [CONTRIBUTOR LICENSE AGREEMENT](CONTRIBUTOR_LICENSE_AGREEMENT.md);
-* [CONTRIBUTING GUIDE](CONTRIBUTING.md).
+Zaman serilerinden kayan pencere (sliding window = 120s) tekniğiyle öznitelikler çıkarılmıştır:
+1. **İstatistiksel Metrikler**: Ortalama, standart sapma, min, max, aralık ($Max - Min$).
+2. **Fiziksel Türevler**: Basınç ve sıcaklık anlık değişim hızları ($\frac{dP}{dt}, \frac{dT}{dt}$).
+3. **Farksal Vana Parametreleri**: Şok vana basınç düşüşü ($\Delta P_{CKP} = P_{MON} - P_{JUS}$) ve sıcaklık farkı ($\Delta T_{CKP}$).
 
-It is also very important to know, participate and follow the discussions. See the discussions section.
+### Model Benchmark Sonuçları
 
-## Licenses
+| Algoritma | Doğruluk (Accuracy) | Ağırlıklı F1-Skoru | Eğitim Süresi | Durum |
+|---|:---:|:---:|:---:|:---:|
+| **XGBoost Classifier** | **%93.87** | **0.9396** | 2.63 s | 🏆 En İyi Model |
+| **LightGBM Classifier** | %93.69 | 0.9376 | 2.65 s | 🥈 İkinci |
+| **Random Forest** | %93.63 | 0.9374 | 0.35 s | 🥉 En Hızlı |
+| **HistGradientBoosting** | %93.32 | 0.9342 | 7.28 s | Başarılı |
 
-All the code of this project is licensed under the [Apache 2.0 License](https://opensource.org/licenses/Apache-2.0) and all 3W Dataset's data files (Parquet files saved in subdirectories of the [dataset](dataset) directory) are licensed under the [Creative Commons Attribution 4.0 International License](http://creativecommons.org/licenses/by/4.0/).
+---
 
-## Versioning
+## 5. Erken Uyarı Sistemi (Lead-Time Analizi)
 
-In the 3W Project, three types of versions will be managed as follows.
+Arıza ve tıkanma olayları tam gerçekleşmeden kaç dakika önce yapay zekanın erken uyarı ürettiği (Lead-Time) test edilmiştir:
 
-* Version of the 3W Toolkit: specified in the [pyproject.toml](pyproject.toml) file;
-* Version of the 3W Dataset: specified in the [dataset.ini](dataset/dataset.ini) file;
-* Version of the 3W Project: specified with tags in the git repository;
-* We will exclusively use the semantic versioning defined in [https://semver.org](https://semver.org);
-* Versions will always be updated manually;
-* Versioning of the 3W Toolkit and 3W Dataset are completely independent of each other;
-* The version of the 3W Project will be updated whenever, and only when, there is a new commit in the `main` branch of the repository, regardless of the updated resource: 3W Toolkit, 3W Dataset, 3W Project's documentation, example of use, etc;
-* We will only use annotated tags and for each tag there will be a release in the remote repository (GitHub);
-* Content for each release will be automatically generated with functionality provided by GitHub.
+| Olay Sınıfı | Erken Tespit Oranı | Ortalama Erken Uyarı Süresi (Lead-Time) |
+|---|:---:|:---:|
+| **BSW'de Ani Artış (Class 1)** | %100 | **128.1 dakika (~2.1 saat)** |
+| **DHSV Vanası Kapanması (Class 2)** | %100 | **59.5 dakika (~1.0 saat)** |
+| **Hızlı Verimlilik Kaybı (Class 5)** | %100 | **8.2 dakika** |
+| **PCK Vanasında Daralma (Class 6)** | %100 | **29.7 dakika** |
+| **PCK Vanasında Kireçlenme (Class 7)** | %100 | **423.3 dakika (~7.0 saat)** |
+| **Üretim Hattı Hidrat Oluşumu (Class 8)** | %100 | **29.7 dakika** |
+| **Servis Hattı Hidrat Oluşumu (Class 9)** | %100 | **97.3 dakika (~1.6 saat)** |
+| **GENEL ORTALAMA** | **%100** | **110.81 DAKİKA (~1.8 SAAT)** |
 
-For detailed versioning rules, including SemVer guidelines for the 3W Toolkit, see [VERSIONING.md](VERSIONING.md).
+---
 
-## Questions
+## 6. Açıklanabilir Yapay Zeka (SHAP XAI)
 
-See the discussions section. If you don't get clarification, please open discussions to ask your questions so we can answer them.
+**SHAP (SHapley Additive exPlanations)** TreeExplainer ile model kararlarına en yüksek katkıyı sağlayan kök neden sensör kanalları belirlenmiştir:
 
-# 3W Dataset
+1. `T-MON-CKP_std`: Şok vana memba sıcaklık dalgalanması (Etki: 0.3337)
+2. `P-PDG_mean`: Kuyu dibi kalıcı basınç ortalaması (Etki: 0.3314)
+3. `DELTA-P-CKP_mean`: Şok vana farksal basıncı ($\Delta P = P_{MON} - P_{JUS}$) (Etki: 0.3017)
+4. `P-JUS-CKGL_mean`: Gas Lift mansap basıncı (Etki: 0.2573)
+5. `P-ANULAR_max`: Kuyu anüler basınç maksimumu (Etki: 0.2468)
 
-To the best of its authors' knowledge, this is the first realistic and public dataset with rare undesirable real events in oil wells that can be readily used as a benchmark dataset for development of machine learning techniques related to inherent difficulties of actual data. For more information about the theory behind each version of the 3W Dataset, please refer to publications listed in [CITATION.md](CITATION.md).
+---
 
-## Structure
+## 7. Derin Öğrenme Mimarisi (PyTorch 1D-CNN + BiLSTM)
 
-The 3W Dataset consists of multiple Parquet files saved in subdirectories of the [dataset](dataset) directory and structured as detailed [here](3W_DATASET_STRUCTURE.md). 
+Ham zaman serilerinden uçtan uca öğrenen PyTorch mimarisi:
+- **1D-CNN Katmanı**: Sensör sinyallerindeki ani sıçrama ve türev kalıplarını yakalar (`Conv1d -> BatchNorm -> ReLU -> MaxPool`).
+- **BiLSTM Katmanı**: Zamansal uzun dönemli bağımlılıkları ve rejim değişimlerini modeller (`BiLSTM(hidden_size=64, num_layers=2)`).
+- **Ağırlık Dosyası**: `models_saved/pytorch_cnn_lstm_3w.pth`
 
-## Overview
+---
 
-A 3W Dataset's general presentation with some quantities and statistics is available in [this](dataset/demos/_basic/main.ipynb) Jupyter Notebook.
+## 8. Canlı Web Dashboard & Özellikleri
 
-# 3W Toolkit
+- **Canlı Zaman Serisi Grafikleri**: Chart.js ile eş zamanlı basınç, sıcaklık ve vana durumu izleme.
+- **Anlık AI Tespiti**: Seçilen kuyu dosyasındaki arızayı, doğruluk oranını ve risk seviyesini (CRITICAL, WARNING, NORMAL) renkli rozetlerle sunar.
+- **Canlı Kuyu Simülatörü**: Oynat/Durdur butonları ile açık deniz kuyu veri akışını simüle eder.
+- **PDF Teşhis Raporu İndirme**: Tek tıkla mühendislik standartlarında PDF teşhis raporu oluşturup indirir.
+- **Sesli & Görsel Alarm**: `CRITICAL` risklerde Web Audio API ile sesli alarm uyarısı verir.
 
-The 3W Toolkit is a software package written in Python 3 that contains resources that make the following easier:
+---
 
-* [3W Dataset](#3w-dataset) overview generation;
-* Experimentation and comparative analysis of Machine Learning-based approaches and algorithms for specific problems related to undesirable events that occur in offshore oil wells during their respective drilling, completion and production phases;
-* Standardization of key points of the Machine Learning-based algorithm development pipeline.
+## 9. Kurulum ve Çalıştırma
 
-It is important to note that there are arbitrary choices in this toolkit, but they have been carefully made to allow adequate comparative analysis without compromising the ability to experiment with different approaches and algorithms.
+### Gereksinimler
+- Python 3.10+
+- Git
 
-For more information about the theory behind each version of the 3W Toolkit, please refer to publications listed in [CITATION.md](CITATION.md).
-
-## Structure
-
-The 3W Toolkit is implemented in sub-modules as discribed [here](3W_TOOLKIT_STRUCTURE.md).
-
-## Incorporated Benchmarks
-
-Benchmarks for specific tasks will be gradually incorporated into this project. They will be located in the `3W/benchmarks/` folder.
-
-We encourage the community to contribute their own benchmarks. All specifications are detailed in the [Contributing Guide](CONTRIBUTING.md).
-
-## Examples of Use
-
-The list below with examples of how to use the 3W Toolkit will be incremented throughout its development.
-
-* 3W Dataset's overviews:
-  * [Baseline](dataset/demos/_basic/main.ipynb)
-  * [André Machado's overview](dataset/demos/AndreMachado/main.ipynb)
-
-For a contribution of yours to be listed here, follow the instructions detailed in the [CONTRIBUTING GUIDE](CONTRIBUTING.md).
-
-## Reproducibility
-
-For all results generated by the 3W Toolkit to be consistent, we recommend you create and use a virtual environment with the dependencies specified in the [pyproject.toml](pyproject.toml). Our recommended virtual environment manager is [uv](https://docs.astral.sh/uv/). Install `uv` according to the [official instructions](https://docs.astral.sh/uv/getting-started/installation/). Open a prompt on your operating system (Windows, Linux or MacOS). Make sure the current directory is the directory where you have the 3W. Run the following commands as needed:
-
-* To create a virtual environment and install all dependencies:
-
-**Linux / macOS (terminal):**
+### 1. Depoyu Klonlayın
 ```bash
-uv venv .venv
-source .venv/bin/activate
-uv pip install -e .
+git clone https://github.com/UmutSemihSoyer/petrobras-3w-ai-monitoring.git
+cd petrobras-3w-ai-monitoring
 ```
 
-**Windows (cmd):**
-```cmd
-uv venv .venv
-.venv\Scripts\activate.bat
-uv pip install -e .
-```
-
-**Windows (PowerShell):**
-```powershell
-uv venv .venv
-.venv\Scripts\Activate.ps1
-uv pip install -e .
-```
-
-**Windows (Bash):**
+### 2. Bağımlılıkları Yükleyin
 ```bash
-uv venv .venv
-source .venv/Scripts/activate
-uv pip install -e .
+pip install -r requirements.txt
 ```
 
-* To use the 3W Toolkit resources interactively:
+### 3. Web Dashboard'u Başlatın
+```bash
+python app.py
 ```
-$ python
-```
-* To initialize a local Jupyter Notebook server:
-```
-$ jupyter notebook
+Tarayıcınızda **`http://localhost:5000`** adresine gidin.
+
+### 4. Analiz Betiklerini Çalıştırma (Opsiyonel)
+```bash
+# EDA Analizi
+python detailed_eda.py
+
+# Öznitelik Çıkarımı
+python feature_engineering.py
+
+# Model Eğitimi
+python train_models.py
+
+# Erken Uyarı Lead-Time Analizi
+python early_warning_analysis.py
+
+# SHAP Kök Neden Analizi
+python explainable_ai_shap.py
 ```
 
-# 3W Community
+---
 
-The 3W Community is gradually expanding and is made up of independent professionals and representatives of research institutions, startups, companies and oil operators from different countries.
+## 10. API Referansı
 
-More information about this community can be found [here](community/README.md).
+| Endpoint | Metod | Açıklama |
+|---|:---:|---|
+| `/` | `GET` | İnteraktif Web Dashboard Arayüzü |
+| `/api/dataset_info` | `GET` | Sınıf bilgileri, dosya sayıları ve aktif model metrikleri |
+| `/api/file_list/<class_id>` | `GET` | Seçilen sınıfa ait Parquet dosya listesi |
+| `/api/file_data/<class_id>/<file_name>` | `GET` | Sensör zaman serisi verileri ve anlık AI tahmini |
+| `/api/export_pdf_report/<class_id>/<file_name>` | `GET` | Seçilen dosya için PDF Teşhis Raporu indirir |
+
+---
+
+## 📄 Lisans
+Bu proje [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) lisansı altında sunulmaktadır. Petrobras 3W dataset verileri Petrobras şirketine aittir.
