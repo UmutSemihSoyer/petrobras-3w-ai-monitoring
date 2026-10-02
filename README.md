@@ -1,19 +1,44 @@
-# 🛢️ Petrobras 3W - AI Monitoring & Early Warning System
+# 🛢️ Petrobras 3W - Industrial AI Monitoring & Early Warning Ecosystem
 
-> **Açık Deniz Petrol Kuyularında (Offshore Oil Wells) Geçici Rejimler (Transients) ve Anomali Tespiti İçin Geliştirilmiş Endüstriyel Yapay Zeka ve Erken Uyarı Platformu**
-
-![Python Version](https://img.shields.io/badge/Python-3.13-blue.svg)
-![Framework](https://img.shields.io/badge/Framework-Flask_3.1-emerald.svg)
-![ML Model](https://img.shields.io/badge/Model-XGBoost_93.87%25_Accuracy-brightgreen.svg)
-![License](https://img.shields.io/badge/License-CC_BY_4.0-orange.svg)
+[![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen.svg?style=for-the-badge&logo=githubactions)](https://github.com/UmutSemihSoyer/petrobras-3w-ai-monitoring)
+[![Pytest Coverage](https://img.shields.io/badge/Pytest-43%2F43%20Passed%20(100%25)-emerald.svg?style=for-the-badge&logo=pytest)](file:///c:/Users/Semih/Desktop/petrol/petrobras3w/tests/test_app_and_pipeline.py)
+[![Python Version](https://img.shields.io/badge/Python-3.13-3776AB.svg?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
+[![Framework](https://img.shields.io/badge/Framework-Flask_3.1-000000.svg?style=for-the-badge&logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
+[![ML Model](https://img.shields.io/badge/Model-XGBoost_F1_0.9396-blueviolet.svg?style=for-the-badge&logo=xgboost)](file:///c:/Users/Semih/Desktop/petrol/petrobras3w/train_models.py)
+[![Early Warning Lead Time](https://img.shields.io/badge/Lead--Time-110.8_min_early-orange.svg?style=for-the-badge)](file:///c:/Users/Semih/Desktop/petrol/petrobras3w/early_warning_analysis.py)
+[![Docker Ready](https://img.shields.io/badge/Docker-Ready-2496ED.svg?style=for-the-badge&logo=docker&logoColor=white)](file:///c:/Users/Semih/Desktop/petrol/petrobras3w/docker-compose.yml)
+[![License](https://img.shields.io/badge/License-CC_BY_4.0-yellow.svg?style=for-the-badge)](file:///c:/Users/Semih/Desktop/petrol/petrobras3w/LICENSE.md)
 
 ---
 
-### 🎯 İşe Alım Yöneticileri ve Teknik İK İçin Özet (Executive Pitch)
+> [!IMPORTANT]  
+> **Açık Deniz Petrol Kuyularında (Offshore Oil Wells) Geçici Rejimler (Transients) ve Anomali Tespiti İçin Geliştirilmiş Endüstriyel Yapay Zeka ve Erken Uyarı Platformu**
 
-> **Bu proje; Senior AI / ML / MLOps & Industrial IoT Engineer rolleri için uçtan uca prodüksiyon kalitesinde mimari, yüksek ölçeklenebilirlik, açıklanabilir yapay zeka (XAI) ve endüstriyel standartlara tam uyum sergilemek üzere tasarlanmıştır.**
+> [!TIP]
+> **İşe Alım Yöneticileri ve Teknik İK İçin:**  
+> Bu proje; **Senior AI / ML / MLOps & Industrial IoT Engineer** rolleri için uçtan uca prodüksiyon kalitesinde mimari, yüksek ölçeklenebilirlik, açıklanabilir yapay zeka (SHAP/LIME), 3D Dijital İkiz (Three.js WebGL/WebAR) ve endüstriyel standartlara (OPC-UA/Kafka/Modbus) tam uyum sergilemek üzere tasarlanmıştır.
 
-#### 💼 Projede Sergilenen Mühendislik Yetkinlikleri (Skill Matrix)
+---
+
+## 📌 İçindekiler
+- [1. İşe Alım Yöneticileri ve İK İçin Özet (Executive Pitch)](#1-işe-alım-yöneticileri-ve-i̇k-için-özet-executive-pitch)
+- [2. İşe Alım / CV İçin Hazır Özgeçmiş Maddeleri](#2-işe-alım--cv-için-hazır-özgeçmiş-maddeleri)
+- [3. Proje Hakkında](#3-proje-hakkında)
+- [4. Sistem Mimarisi](#4-sistem-mimarisi)
+- [5. Petrobras 3W Veri Kümesi Yapısı](#5-petrobras-3w-veri-kümesi-yapısı)
+- [6. Öznitelik Mühendisliği & ML Modelleri](#6-öznitelik-mühendisliği--ml-modelleri)
+- [7. Erken Uyarı Sistemi (Lead-Time Analizi)](#7-erken-uyarı-sistemi-lead-time-analizi)
+- [8. Açıklanabilir Yapay Zeka (SHAP XAI)](#8-açıklanabilir-yapay-zeka-shap-xai)
+- [9. Derin Öğrenme & Fizik Tabanlı Modeller (PyTorch & PINN)](#9-derin-öğrenme--fizik-tabanlı-modeller-pytorch--pinn)
+- [10. Canlı Web Dashboard & Gelişmiş Modüller](#10-canlı-web-dashboard--gelişmiş-modüller)
+- [11. Kurulum ve Çalıştırma](#11-kurulum-ve-çalıştırma)
+- [12. Tam REST API Referansı (35+ Endpoints)](#12-tam-rest-api-referansı-35-endpoints)
+
+---
+
+## 1. İşe Alım Yöneticileri ve İK İçin Özet (Executive Pitch)
+
+### 💼 Projede Sergilenen Mühendislik Yetkinlikleri (Skill Matrix)
 - **Machine Learning & Deep Learning**: XGBoost, LightGBM, PyTorch (1D-CNN + BiLSTM), PatchTST Time-Series Transformer, Physics-Informed Neural Networks (PINN).
 - **MLOps & Canlı Sistem İzleme**: Kolmogorov-Smirnov Data Drift & Concept Drift Tespiti, Prometheus (`/metrics`) metrik sunucusu, JWT/OAuth2 RBAC & Audit Trail Logging.
 - **Endüstriyel IoT & SCADA**: OPC-UA (Async), MQTT, Modbus TCP/RTU, TimescaleDB/InfluxDB, Apache Kafka Akış Altyapısı.
@@ -21,25 +46,10 @@
 - **Edge AI & Embedded Deployment**: TensorRT, ONNX Runtime (<5ms gecikme), Low-Power TinyML (12-byte sensör paket çözücü).
 - **Gelişmiş Görselleştirme & Web UI**: Three.js WebGL 3D Dijital İkiz (Christmas Tree), WebAR Mobil Saha Modu, Chart.js, ReportLab PDF Rapor Motoru.
 
-#### 📊 İş Değeri ve Finansal Etki (Business Impact & ROI)
+### 📊 İş Değeri ve Finansal Etki (Business Impact & ROI)
 - **Erken Anomali Tespiti**: Kritik arızaların ortalama **1.8 saat önce** tespiti ile plansız kuyu duruşlarının önlenmesi.
 - **ESG & Karbon Tasarrufu**: Flare stack gaz yakma optimizasyonu ile **%25 emisyon ve karbon vergisi düşüşü**.
 - **Otonom Saha Kontrolü**: Pekiştirmeli Öğrenme (RL PPO) choke vana otopilotu ve acil durum kapanış (ESD) kilit sistemi.
-
----
-
-## 📌 İçindekiler
-- [1. Proje Hakkında](#1-proje-hakkında)
-- [2. İşe Alım / CV İçin Hazır Özgeçmiş Maddeleri](#2-işe-alım--cv-için-hazır-özgeçmiş-maddeleri)
-- [3. Sistem Mimarisi](#3-sistem-mimarisi)
-- [4. Petrobras 3W Veri Kümesi Yapısı](#4-petrobras-3w-veri-kümesi-yapısı)
-- [5. Öznitelik Mühendisliği & ML Modelleri](#5-öznitelik-mühendisliği--ml-modelleri)
-- [6. Erken Uyarı Sistemi (Lead-Time Analizi)](#6-erken-uyarı-sistemi-lead-time-analizi)
-- [7. Açıklanabilir Yapay Zeka (SHAP XAI)](#7-açıklanabilir-yapay-zeka-shap-xai)
-- [8. Derin Öğrenme Mimarisi (PyTorch 1D-CNN + BiLSTM)](#8-derin-öğrenme-mimarisi-pytorch-1d-cnn--bilstm)
-- [9. Canlı Web Dashboard & Özellikleri](#9-canlı-web-dashboard--özellikleri)
-- [10. Kurulum ve Çalıştırma](#10-kurulum-ve-çalıştırma)
-- [11. API Referansı](#11-api-referansı)
 
 ---
 
@@ -57,8 +67,7 @@ CV'nize veya LinkedIn profilinize doğrudan ekleyebileceğiniz profesyonel ifade
 
 ---
 
-
-## 1. Proje Hakkında
+## 3. Proje Hakkında
 
 **Petrobras 3W**, Brezilya Ulusal Petrol Şirketi (Petrobras) tarafından açık deniz petrol kuyularında meydana gelen istenmeyen olayların (undesirable events) tespiti amacıyla yayınlanmış 2.228 adet çok değişkenli zaman serisi `.parquet` dosyasından oluşan dünyadaki en büyük açık benchmark veri kümesidir.
 
@@ -66,7 +75,7 @@ Bu proje; ham sensör zaman serilerini işleyip **%93.87 doğrulukla** olayları
 
 ---
 
-## 2. Sistem Mimarisi
+## 4. Sistem Mimarisi
 
 ```mermaid
 flowchart TD
@@ -89,7 +98,7 @@ flowchart TD
 
     subgraph Presentation_Layer ["4. Web Dashboard & Sunum Katmanı"]
         Flask["Flask REST API Server (port 5000)"]
-        UI["Interactive Glassmorphism Dashboard\n(Chart.js, Simulator, PDF Export, Alarm)"]
+        UI["Interactive Glassmorphism Dashboard\n(Chart.js, 3D Digital Twin, WebAR, PDF Export)"]
     end
 
     RawData --> FE
@@ -101,7 +110,7 @@ flowchart TD
 
 ---
 
-## 3. Petrobras 3W Veri Kümesi Yapısı
+## 5. Petrobras 3W Veri Kümesi Yapısı
 
 Veri kümesi 10 temel olay sınıfından oluşmaktadır:
 
@@ -118,19 +127,9 @@ Veri kümesi 10 temel olay sınıfından oluşmaktadır:
 | **8** | Üretim Hattında Hidrat Oluşumu (Hydrate in Production Line) | 14 | 81 | 0 | **95** | Geçici (Transient) |
 | **9** | Servis Hattında Hidrat Oluşumu (Hydrate in Service Line) | 57 | 150 | 0 | **207** | Geçici (Transient) |
 
-### Sensör Değişkenleri ve Birimleri
-
-- `P-PDG` / `T-PDG`: Kuyu dibi kalıcı basınç (Pa) ve sıcaklık (°C)
-- `P-TPT` / `T-TPT`: Deniz dibi kuyu başı ağaç basıncı (Pa) ve sıcaklığı (°C)
-- `P-MON-CKP` / `P-JUS-CKP`: Üretim şok vanası (PCK) memba ve mansap basınçları (Pa)
-- `T-MON-CKP` / `T-JUS-CKP`: Üretim şok vanası memba ve mansap sıcaklıkları (°C)
-- `P-ANULAR`: Kuyu anüler basıncı (Pa)
-- `QGL` / `P-JUS-CKGL`: Gas lift akış hızı ($m^3/s$) ve mansap basıncı (Pa)
-- `ESTADO-*`: Vana açık/kapalı durumları ($0.0, 0.5, 1.0$)
-
 ---
 
-## 4. Öznitelik Mühendisliği & ML Modelleri
+## 6. Öznitelik Mühendisliği & ML Modelleri
 
 Zaman serilerinden kayan pencere (sliding window = 120s) tekniğiyle öznitelikler çıkarılmıştır:
 1. **İstatistiksel Metrikler**: Ortalama, standart sapma, min, max, aralık ($Max - Min$).
@@ -148,7 +147,7 @@ Zaman serilerinden kayan pencere (sliding window = 120s) tekniğiyle öznitelikl
 
 ---
 
-## 5. Erken Uyarı Sistemi (Lead-Time Analizi)
+## 7. Erken Uyarı Sistemi (Lead-Time Analizi)
 
 Arıza ve tıkanma olayları tam gerçekleşmeden kaç dakika önce yapay zekanın erken uyarı ürettiği (Lead-Time) test edilmiştir:
 
@@ -165,7 +164,7 @@ Arıza ve tıkanma olayları tam gerçekleşmeden kaç dakika önce yapay zekan�
 
 ---
 
-## 6. Açıklanabilir Yapay Zeka (SHAP XAI)
+## 8. Açıklanabilir Yapay Zeka (SHAP XAI)
 
 **SHAP (SHapley Additive exPlanations)** TreeExplainer ile model kararlarına en yüksek katkıyı sağlayan kök neden sensör kanalları belirlenmiştir:
 
@@ -177,16 +176,14 @@ Arıza ve tıkanma olayları tam gerçekleşmeden kaç dakika önce yapay zekan�
 
 ---
 
-## 7. Derin Öğrenme Mimarisi (PyTorch 1D-CNN + BiLSTM)
+## 9. Derin Öğrenme & Fizik Tabanlı Modeller (PyTorch & PINN)
 
-Ham zaman serilerinden uçtan uca öğrenen PyTorch mimarisi:
-- **1D-CNN Katmanı**: Sensör sinyallerindeki ani sıçrama ve türev kalıplarını yakalar (`Conv1d -> BatchNorm -> ReLU -> MaxPool`).
-- **BiLSTM Katmanı**: Zamansal uzun dönemli bağımlılıkları ve rejim değişimlerini modeller (`BiLSTM(hidden_size=64, num_layers=2)`).
-- **Ağırlık Dosyası**: `models_saved/pytorch_cnn_lstm_3w.pth`
+- **1D-CNN + BiLSTMKatmanı**: Sensör sinyallerindeki ani sıçrama ve türev kalıplarını yakalar. (`models_saved/pytorch_cnn_lstm_3w.pth`)
+- **Physics-Informed Neural Networks (PINN)**: Navier-Stokes akışkanlar mekaniği diferansiyel denklemlerini kayıp fonksiyonuna fizik kısıtı olarak ekler (`pinn_well_model.py`).
 
 ---
 
-## 8. Canlı Web Dashboard & Gelişmiş Modüller
+## 10. Canlı Web Dashboard & Gelişmiş Modüller
 
 - **3D Dijital İkiz (Three.js WebGL)**: Subsea Christmas Tree vana manifoldunun 3D interaktif modeli ve arıza anında renk değiştiren canlı ışık uyarısı.
 - **WebAR Mobil Saha Teknisyen Modülü**: Tablet ve AR gözlükler için QR kod taramalı saha üstü canlı sensör ve SHAP uyarısı.
@@ -195,17 +192,17 @@ Ham zaman serilerinden uçtan uca öğrenen PyTorch mimarisi:
 - **A/B Senaryo Simülatörü**: Vana ayarı ile kimyasal enjeksiyon müdahalelerini 60 dakikalık basınç trendleriyle kıyaslayan simülatör.
 - **ROV Sualtı Bilgisayarlı Görü**: Sualtı robot kameralarından korozyon ve petrol sızıntısı tespit eden görüntü işleyici.
 - **Kuantum Yapay Zeka (QNN) Modeli**: 4-qubit kuantum devrelerinde zaman serisi anomali tespiti yapan simülasyon.
-- **Fizik Bilgili Yapay Zeka (PINN)**: Navier-Stokes akışkanlar mekaniği diferansiyel denklem kısıtlı kuyu kırılma modeli.
 - **Otomatik IEEE LaTeX Makale & Patent Üreticisi**: Model sonuçlarını otomatik akademik makale (`petrobras3w_ai_paper.tex`) ve patent taslağına dönüştüren modül.
 - **PDF Teşhis Raporu İndirme**: Tek tıkla mühendislik standartlarında Matplotlib grafikli PDF teşhis raporu oluşturup indirir.
 
 ---
 
-## 9. Kurulum ve Çalıştırma
+## 11. Kurulum ve Çalıştırma
 
 ### Gereksinimler
 - Python 3.10+
 - Git
+- Docker & Docker Compose (Opsiyonel)
 
 ### 1. Depoyu Klonlayın
 ```bash
@@ -224,14 +221,19 @@ python app.py
 ```
 Tarayıcınızda **`http://localhost:5000`** adresine gidin.
 
-### 4. Test Paketini Çalıştırma
+### 4. Docker İle Tek Komutta Çalıştırma
+```bash
+docker compose up --build -d
+```
+
+### 5. Test Paketini Çalıştırma
 ```bash
 pytest tests/test_app_and_pipeline.py
 ```
 
 ---
 
-## 10. Tam API Referansı
+## 12. Tam REST API Referansı (35+ Endpoints)
 
 | Endpoint | Metod | Açıklama |
 |---|:---:|---|
