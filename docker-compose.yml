@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  petrobras3w-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: petrobras3w_ai_monitor
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./models_saved:/app/models_saved
+      - ./data_processed:/app/data_processed
+      - ./reports_eda:/app/reports_eda
+    environment:
+      - FLASK_ENV=production
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped

@@ -1,0 +1,16 @@
+{
+  "short_name": "Petrobras 3W",
+  "name": "Petrobras 3W Offshore Oil Well AI Monitoring",
+  "icons": [
+    {
+      "src": "/static/images/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#0F172A",
+  "theme_color": "#0284C7",
+  "display": "standalone",
+  "orientation": "any"
+}

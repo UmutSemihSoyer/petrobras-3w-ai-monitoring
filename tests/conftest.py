@@ -2,9 +2,16 @@ import pytest
 import matplotlib
 import pandas as pd
 import numpy as np
-from ThreeWToolkit.reports.report_generation import ReportGeneration
-from ThreeWToolkit.core.base_dataset import BaseDataset
-from ThreeWToolkit.core.dataset_outputs import DatasetOutputs
+try:
+    from ThreeWToolkit.reports.report_generation import ReportGeneration
+    from ThreeWToolkit.core.base_dataset import BaseDataset
+    from ThreeWToolkit.core.dataset_outputs import DatasetOutputs
+    THREEW_TOOLKIT_AVAILABLE = True
+except ImportError:
+    ReportGeneration = None
+    BaseDataset = object
+    DatasetOutputs = None
+    THREEW_TOOLKIT_AVAILABLE = False
 
 
 @pytest.fixture(autouse=True, scope="session")

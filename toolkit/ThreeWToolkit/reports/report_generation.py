@@ -7,9 +7,15 @@ import jinja2
 from pathlib import Path
 from typing import Callable
 
-from pylatex import Document, Section, Command, Center, Itemize
-from pylatex.utils import NoEscape
-from pylatex.package import Package
+try:
+    from pylatex import Document, Section, Command, Center, Itemize
+    from pylatex.utils import NoEscape
+    from pylatex.package import Package
+    PYLATEX_AVAILABLE = True
+except ImportError:
+    Document = Section = Command = Center = Itemize = None
+    NoEscape = Package = None
+    PYLATEX_AVAILABLE = False
 
 from ..data_visualization import DataVisualization
 

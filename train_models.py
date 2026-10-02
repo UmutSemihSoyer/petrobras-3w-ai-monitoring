@@ -34,6 +34,9 @@ import xgboost as xgb
 import lightgbm as lgb
 from sklearn.preprocessing import RobustScaler
 
+from sklearn.model_selection import StratifiedGroupKFold
+from sklearn.utils.class_weight import compute_sample_weight
+
 def train_and_evaluate():
     print("=" * 60)
     print(" STEP 2: MACHINE LEARNING MODEL TRAINING & EVALUATION ")
@@ -52,6 +55,7 @@ def train_and_evaluate():
     
     X = df[feature_cols].values
     y = df['base_class'].values
+    groups = df['file_name'].values if 'file_name' in df.columns else df.index.values
     
     # Clean infinity and large values
     X = np.nan_to_num(X, nan=0.0, posinf=1e8, neginf=-1e8)
@@ -59,17 +63,22 @@ def train_and_evaluate():
     
     print(f"Features count: {len(feature_cols)}, Target classes: {len(np.unique(y))}")
     
-    # Stratified Train-Test Split (80% Train, 20% Test)
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.20, random_state=42, stratify=y
-    )
-    print(f"Train samples: {len(X_train)}, Test samples: {len(X_test)}")
+    # Stratified Group Split (80% Train, 20% Test grouped by file_name to prevent data leakage)
+    sgkf = StratifiedGroupKFold(n_splits=5)
+    train_idx, test_idx = next(sgkf.split(X, y, groups=groups))
+    
+    X_train, X_test = X[train_idx], X[test_idx]
+    y_train, y_test = y[train_idx], y[test_idx]
+    print(f"Train samples: {len(X_train)} (Groups: {len(np.unique(groups[train_idx]))}), Test samples: {len(X_test)} (Groups: {len(np.unique(groups[test_idx]))})")
+    
+    # Compute sample weights for class imbalance
+    sample_weights = compute_sample_weight('balanced', y_train)
     
     models = {
         "XGBoost": xgb.XGBClassifier(n_estimators=100, max_depth=6, learning_rate=0.1, random_state=42, n_jobs=-1, eval_metric='mlogloss'),
-        "LightGBM": lgb.LGBMClassifier(n_estimators=100, learning_rate=0.1, random_state=42, n_jobs=-1, verbose=-1),
-        "RandomForest": RandomForestClassifier(n_estimators=100, random_state=42, n_jobs=-1),
-        "HistGradientBoosting": HistGradientBoostingClassifier(max_iter=150, random_state=42)
+        "LightGBM": lgb.LGBMClassifier(n_estimators=100, learning_rate=0.1, random_state=42, n_jobs=-1, class_weight='balanced', verbose=-1),
+        "RandomForest": RandomForestClassifier(n_estimators=100, random_state=42, n_jobs=-1, class_weight='balanced'),
+        "HistGradientBoosting": HistGradientBoostingClassifier(max_iter=150, random_state=42, class_weight='balanced')
     }
     
     best_model = None
@@ -81,7 +90,10 @@ def train_and_evaluate():
     for name, model in models.items():
         print(f"\nTraining {name}...")
         t0 = time.time()
-        model.fit(X_train, y_train)
+        if name == "XGBoost":
+            model.fit(X_train, y_train, sample_weight=sample_weights)
+        else:
+            model.fit(X_train, y_train)
         train_time = time.time() - t0
         
         y_pred = model.predict(X_test)

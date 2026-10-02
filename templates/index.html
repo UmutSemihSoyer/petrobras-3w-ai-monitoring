@@ -10,9 +10,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js -->
+    <!-- Chart.js & Three.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
 </head>
 <body>
     <!-- Top Navigation Header -->
@@ -28,8 +30,14 @@
             <div class="status-badge live">
                 <span class="pulse-dot"></span> AI ENGINE ONLINE
             </div>
-            <div class="model-badge">
-                <i class="fa-solid fa-brain"></i> <span id="model-name-display">XGBoost (93.87%)</span>
+            <button class="btn btn-sm btn-secondary" id="btn-open-fleet" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #E2E8F0; padding: 0.35rem 0.75rem; border-radius: 8px;">
+                <i class="fa-solid fa-globe"></i> Filo İzleme
+            </button>
+            <button class="btn btn-sm btn-secondary" id="btn-open-upload" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #E2E8F0; padding: 0.35rem 0.75rem; border-radius: 8px;">
+                <i class="fa-solid fa-cloud-arrow-up"></i> Veri Yükle & Eğit
+            </button>
+            <div class="model-badge" id="btn-open-benchmark" style="cursor: pointer;" title="Model Benchmark Karşılaştırmasını Aç">
+                <i class="fa-solid fa-chart-simple"></i> <span id="model-name-display">LightGBM (91.63%)</span>
             </div>
         </div>
     </header>
@@ -39,20 +47,28 @@
         <!-- Sidebar Controls -->
         <aside class="sidebar">
             <div class="section-card">
-                <h3><i class="fa-solid fa-list-check"></i> Olay Sınıfı Seçimi</h3>
-                <div class="form-group">
-                    <label for="class-select">3W Event Sınıfı:</label>
+                <h3><i class="fa-solid fa-sliders"></i> AI Model & Veri Seçimi</h3>
+                <div class="form-group mb-2">
+                    <label for="model-select"><i class="fa-solid fa-brain"></i> AI Algoritması:</label>
+                    <select id="model-select" class="form-select">
+                        <option value="xgboost">XGBoost Classifier (F1: 92.35%)</option>
+                        <option value="pytorch">PyTorch 1D-CNN + BiLSTM</option>
+                    </select>
+                </div>
+                <div class="form-group mb-2">
+                    <label for="class-select"><i class="fa-solid fa-layer-group"></i> 3W Event Sınıfı:</label>
                     <select id="class-select" class="form-select">
                         <!-- Populated dynamically -->
                     </select>
                 </div>
-                <div class="form-group">
-                    <label for="file-select">Zaman Serisi Dosyası (.parquet):</label>
+                <div class="form-group mb-2">
+                    <label for="file-search-input"><i class="fa-solid fa-magnifying-glass"></i> Dosya Ara:</label>
+                    <input type="text" id="file-search-input" class="form-select" placeholder="Kuyu / dosya adı ara..." style="margin-bottom: 0.5rem;" />
                     <select id="file-select" class="form-select">
                         <option value="">Dosya seçiniz...</option>
                     </select>
                 </div>
-                <button id="btn-load-data" class="btn btn-primary w-100">
+                <button id="btn-load-data" class="btn btn-primary w-100 mt-2">
                     <i class="fa-solid fa-chart-line"></i> Sinyal Verisini Yükle
                 </button>
             </div>
@@ -80,6 +96,25 @@
                         </button>
                     </div>
                 </div>
+            </div>
+
+            <!-- SHAP Explainability Card -->
+            <div class="section-card hidden" id="shap-explain-box">
+                <h3><i class="fa-solid fa-lightbulb"></i> SHAP Kök Neden Analizi</h3>
+                <div id="shap-feature-list" style="font-size: 0.8rem; display: flex; flex-direction: column; gap: 0.4rem;">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <!-- Engineering Recommendation Card -->
+            <div class="section-card hidden" id="recommendation-box">
+                <h3><i class="fa-solid fa-user-shield"></i> Mühendislik Aksiyon Önerisi</h3>
+                <div id="rec-severity-badge" class="severity-badge mb-2" style="background: rgba(16,185,129,0.2); color: #10B981; display: inline-block;">BİLGİ / RUTİN</div>
+                <h4 id="rec-title" style="font-size: 0.9rem; margin-bottom: 0.5rem; color: #F8FAFC;">Operasyonel Müdahale</h4>
+                <ul id="rec-steps-list" style="font-size: 0.8rem; padding-left: 1.1rem; color: #CBD5E1; margin-bottom: 0.5rem;">
+                    <!-- Populated dynamically -->
+                </ul>
+                <div id="rec-sensor-notes" style="font-size: 0.75rem; color: #F59E0B; margin-top: 0.4rem;"></div>
             </div>
 
             <!-- Simulation Controls -->
@@ -118,10 +153,28 @@
                 </div>
             </div>
 
+            <!-- 3D Digital Twin & AR Inspection Container -->
+            <div class="chart-card mb-3">
+                <div class="chart-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <span class="chart-title"><i class="fa-solid fa-cube"></i> 3D Dijital İkiz (Subsea Christmas Tree & Valve Twin)</span>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="btn btn-sm" id="btn-toggle-3d-rotate" style="background: rgba(255,255,255,0.1); color: #E2E8F0; border: 1px solid rgba(255,255,255,0.15); border-radius: 6px;"><i class="fa-solid fa-rotate"></i> Dönüşü Değiştir</button>
+                        <button class="btn btn-sm btn-primary" id="btn-open-webar" style="border-radius: 6px;"><i class="fa-solid fa-vr-cardboard"></i> WebAR Saha Modu</button>
+                    </div>
+                </div>
+                <div id="digital-twin-viewport" style="width: 100%; height: 260px; background: #090D16; border-radius: 8px; position: relative; overflow: hidden; margin-top: 0.5rem;">
+                    <!-- Canvas rendered by Three.js -->
+                    <div id="twin-overlay-info" style="position: absolute; top: 10px; left: 10px; background: rgba(15,23,42,0.85); padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.15); font-size: 0.75rem; color: #E2E8F0; z-index: 10;">
+                        <i class="fa-solid fa-circle" id="twin-status-dot" style="color: #10B981;"></i> Subsea Christmas Tree: <b id="twin-status-text">NORMAL</b>
+                    </div>
+                </div>
+            </div>
+
             <!-- Charts Container -->
             <div class="charts-container">
                 <!-- Pressure Chart -->
                 <div class="chart-card">
+
                     <div class="chart-header">
                         <span class="chart-title"><i class="fa-solid fa-chart-area"></i> Basınç Profil Sinyalleri (P-PDG, P-TPT, P-MON-CKP)</span>
                     </div>
@@ -153,6 +206,159 @@
         </section>
     </main>
 
+    <!-- Benchmark Comparison Modal -->
+    <div id="benchmark-modal" class="modal-backdrop hidden">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-scale-balanced"></i> Yapay Zeka Model Benchmark Karşılaştırması</h3>
+                <button id="btn-close-modal" class="btn-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <table class="benchmark-table">
+                    <thead>
+                        <tr>
+                            <th>Model Mimarisi</th>
+                            <th>Ağırlıklı F1-Skoru</th>
+                            <th>Doğruluk (Accuracy)</th>
+                            <th>Girdi Tipi</th>
+                            <th>Durum</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="highlight-row">
+                            <td><b>LightGBM Classifier</b></td>
+                            <td><span class="badge-f1">0.9163</span></td>
+                            <td>%91.22</td>
+                            <td>Kayan Pencere Öznitelikleri (104 feature)</td>
+                            <td><span class="badge-status-top">🏆 En İyi ML Modeli</span></td>
+                        </tr>
+                        <tr>
+                            <td><b>XGBoost Classifier</b></td>
+                            <td>0.9127</td>
+                            <td>%90.90</td>
+                            <td>Kayan Pencere Öznitelikleri (104 feature)</td>
+                            <td><span class="badge-status-ok">İkinci</span></td>
+                        </tr>
+                        <tr>
+                            <td><b>PyTorch 1D-CNN + BiLSTM</b></td>
+                            <td>0.9085</td>
+                            <td>%90.40</td>
+                            <td>Uçtan Uca Ham Sensör Zaman Serisi (8 Kanal)</td>
+                            <td><span class="badge-status-dl">Derin Öğrenme</span></td>
+                        </tr>
+                        <tr>
+                            <td><b>HistGradientBoosting</b></td>
+                            <td>0.9110</td>
+                            <td>%90.72</td>
+                            <td>Kayan Pencere Öznitelikleri (104 feature)</td>
+                            <td><span class="badge-status-ok">Başarılı</span></td>
+                        </tr>
+                        <tr>
+                            <td><b>Random Forest</b></td>
+                            <td>0.8912</td>
+                            <td>%88.96</td>
+                            <td>Kayan Pencere Öznitelikleri (104 feature)</td>
+                            <td><span class="badge-status-ok">En Hızlı Eğitim</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fleet Monitoring Modal -->
+    <div id="fleet-modal" class="modal-backdrop hidden">
+        <div class="modal-card" style="max-width: 900px;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-globe"></i> Platform Filo Genel Görünümü (Multi-Well Fleet Monitor)</h3>
+                <button id="btn-close-fleet-modal" class="btn-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="fleet-summary-bar" style="display: flex; gap: 1rem; margin-bottom: 1.25rem; background: rgba(15,23,42,0.6); padding: 1rem; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08);">
+                    <div style="flex: 1; text-align: center;">
+                        <div style="font-size: 0.75rem; color: #94A3B8;">Filo Sağlık Skoru</div>
+                        <div id="fleet-health-score" style="font-size: 1.6rem; font-weight: 700; color: #10B981;">-- / 100</div>
+                    </div>
+                    <div style="flex: 1; text-align: center;">
+                        <div style="font-size: 0.75rem; color: #94A3B8;">Normal Kuyular</div>
+                        <div id="fleet-normal-count" style="font-size: 1.6rem; font-weight: 700; color: #10B981;">--</div>
+                    </div>
+                    <div style="flex: 1; text-align: center;">
+                        <div style="font-size: 0.75rem; color: #94A3B8;">Uyarı Seviyesi</div>
+                        <div id="fleet-warning-count" style="font-size: 1.6rem; font-weight: 700; color: #F59E0B;">--</div>
+                    </div>
+                    <div style="flex: 1; text-align: center;">
+                        <div style="font-size: 0.75rem; color: #94A3B8;">Kritik Arıza</div>
+                        <div id="fleet-critical-count" style="font-size: 1.6rem; font-weight: 700; color: #EF4444;">--</div>
+                    </div>
+                </div>
+                <div id="fleet-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem;">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload & Retrain Modal -->
+    <div id="upload-modal" class="modal-backdrop hidden">
+        <div class="modal-card" style="max-width: 550px;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-cloud-arrow-up"></i> Yeni Veri Yükle & Modeli Güncelle</h3>
+                <button id="btn-close-upload-modal" class="btn-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="upload-form">
+                    <div class="form-group mb-3">
+                        <label for="upload-class-select"><i class="fa-solid fa-tags"></i> Hedef Event Sınıfı:</label>
+                        <select id="upload-class-select" class="form-select">
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="upload-file-input"><i class="fa-solid fa-file-csv"></i> .parquet veya .csv Dosyası Seçin:</label>
+                        <input type="file" id="upload-file-input" class="form-select" accept=".parquet,.csv" required />
+                    </div>
+                    <button type="submit" id="btn-submit-upload" class="btn btn-primary w-100 mb-3">
+                        <i class="fa-solid fa-upload"></i> Veriyi Sisteme Yükle
+                    </button>
+                </form>
+                <hr style="border-color: rgba(255,255,255,0.1); margin: 1rem 0;" />
+                <div class="retrain-section text-center">
+                    <p style="font-size: 0.85rem; color: #94A3B8; margin-bottom: 0.75rem;">Yüklenen yeni veriler ile yapay zeka model boru hattını yeniden güncelleyin:</p>
+                    <button id="btn-trigger-retrain" class="btn btn-success w-100">
+                        <i class="fa-solid fa-rotate"></i> Yapay Zeka Modelini Yeniden Eğit / Güncelle
+                    </button>
+                    <div id="retrain-status" style="margin-top: 0.5rem; font-size: 0.8rem; color: #10B981;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WebAR Inspection Modal -->
+    <div id="webar-modal" class="modal-backdrop hidden">
+        <div class="modal-card" style="max-width: 600px; text-align: center;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-vr-cardboard"></i> WebAR Mobil Saha Teknisyen Modu</h3>
+                <button id="btn-close-webar-modal" class="btn-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="background: #090D16; height: 260px; border-radius: 12px; position: relative; display: flex; align-items: center; justify-content: center; border: 2px dashed #3B82F6;">
+                    <div style="text-align: center; color: #94A3B8;">
+                        <i class="fa-solid fa-camera-retro fa-3x mb-2" style="color: #3B82F6;"></i>
+                        <p style="font-size: 0.9rem; color: #E2E8F0;">AR Kamera Akışı (Saha Vana Karekodunu Taratın)</p>
+                        <div style="margin-top: 1rem; background: rgba(16,185,129,0.2); color: #10B981; padding: 0.5rem 1rem; border-radius: 20px; font-weight: 600; display: inline-block;">
+                            <i class="fa-solid fa-qrcode"></i> CHOKE-VALVE-002 ALIGNING...
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-top: 1rem; font-size: 0.85rem; color: #CBD5E1;">
+                    Saha teknisyeni vanayı tarattığında anlık SHAP kök neden skoru ve P-PDG basınç değerleri AR gözlük ekranına yansıtılır.
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>
+

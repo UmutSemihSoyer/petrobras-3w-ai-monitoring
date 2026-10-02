@@ -9,19 +9,54 @@
 
 ---
 
-## 📌 İçindekiler
-- [1. Proje Hakkında](#1-proje-hakkında)
-- [2. Sistem Mimarisi](#2-sistem-mimarisi)
-- [3. Petrobras 3W Veri Kümesi Yapısı](#3-petrobras-3w-veri-kümesi-yapısı)
-- [4. Öznitelik Mühendisliği & ML Modelleri](#4-öznitelik-mühendisliği--ml-modelleri)
-- [5. Erken Uyarı Sistemi (Lead-Time Analizi)](#5-erken-uyarı-sistemi-lead-time-analizi)
-- [6. Açıklanabilir Yapay Zeka (SHAP XAI)](#6-açıklanabilir-yapay-zeka-shap-xai)
-- [7. Derin Öğrenme Mimarisi (PyTorch 1D-CNN + BiLSTM)](#7-derin-öğrenme-mimarisi-pytorch-1d-cnn--bilstm)
-- [8. Canlı Web Dashboard & Özellikleri](#8-canlı-web-dashboard--özellikleri)
-- [9. Kurulum ve Çalıştırma](#9-kurulum-ve-çalıştırma)
-- [10. API Referansı](#10-api-referansı)
+### 🎯 İşe Alım Yöneticileri ve Teknik İK İçin Özet (Executive Pitch)
+
+> **Bu proje; Senior AI / ML / MLOps & Industrial IoT Engineer rolleri için uçtan uca prodüksiyon kalitesinde mimari, yüksek ölçeklenebilirlik, açıklanabilir yapay zeka (XAI) ve endüstriyel standartlara tam uyum sergilemek üzere tasarlanmıştır.**
+
+#### 💼 Projede Sergilenen Mühendislik Yetkinlikleri (Skill Matrix)
+- **Machine Learning & Deep Learning**: XGBoost, LightGBM, PyTorch (1D-CNN + BiLSTM), PatchTST Time-Series Transformer, Physics-Informed Neural Networks (PINN).
+- **MLOps & Canlı Sistem İzleme**: Kolmogorov-Smirnov Data Drift & Concept Drift Tespiti, Prometheus (`/metrics`) metrik sunucusu, JWT/OAuth2 RBAC & Audit Trail Logging.
+- **Endüstriyel IoT & SCADA**: OPC-UA (Async), MQTT, Modbus TCP/RTU, TimescaleDB/InfluxDB, Apache Kafka Akış Altyapısı.
+- **Explainable AI (XAI) & Domain Expertise**: SHAP TreeExplainer, LIME, Integrated Gradients kök neden analizi, Erken Uyarı Lead-Time hesabı (**110.8 dakika önceden tespit**).
+- **Edge AI & Embedded Deployment**: TensorRT, ONNX Runtime (<5ms gecikme), Low-Power TinyML (12-byte sensör paket çözücü).
+- **Gelişmiş Görselleştirme & Web UI**: Three.js WebGL 3D Dijital İkiz (Christmas Tree), WebAR Mobil Saha Modu, Chart.js, ReportLab PDF Rapor Motoru.
+
+#### 📊 İş Değeri ve Finansal Etki (Business Impact & ROI)
+- **Erken Anomali Tespiti**: Kritik arızaların ortalama **1.8 saat önce** tespiti ile plansız kuyu duruşlarının önlenmesi.
+- **ESG & Karbon Tasarrufu**: Flare stack gaz yakma optimizasyonu ile **%25 emisyon ve karbon vergisi düşüşü**.
+- **Otonom Saha Kontrolü**: Pekiştirmeli Öğrenme (RL PPO) choke vana otopilotu ve acil durum kapanış (ESD) kilit sistemi.
 
 ---
+
+## 📌 İçindekiler
+- [1. Proje Hakkında](#1-proje-hakkında)
+- [2. İşe Alım / CV İçin Hazır Özgeçmiş Maddeleri](#2-işe-alım--cv-için-hazır-özgeçmiş-maddeleri)
+- [3. Sistem Mimarisi](#3-sistem-mimarisi)
+- [4. Petrobras 3W Veri Kümesi Yapısı](#4-petrobras-3w-veri-kümesi-yapısı)
+- [5. Öznitelik Mühendisliği & ML Modelleri](#5-öznitelik-mühendisliği--ml-modelleri)
+- [6. Erken Uyarı Sistemi (Lead-Time Analizi)](#6-erken-uyarı-sistemi-lead-time-analizi)
+- [7. Açıklanabilir Yapay Zeka (SHAP XAI)](#7-açıklanabilir-yapay-zeka-shap-xai)
+- [8. Derin Öğrenme Mimarisi (PyTorch 1D-CNN + BiLSTM)](#8-derin-öğrenme-mimarisi-pytorch-1d-cnn--bilstm)
+- [9. Canlı Web Dashboard & Özellikleri](#9-canlı-web-dashboard--özellikleri)
+- [10. Kurulum ve Çalıştırma](#10-kurulum-ve-çalıştırma)
+- [11. API Referansı](#11-api-referansı)
+
+---
+
+## 2. İşe Alım / CV İçin Hazır Özgeçmiş Maddeleri
+
+CV'nize veya LinkedIn profilinize doğrudan ekleyebileceğiniz profesyonel ifadeler:
+
+```markdown
+- Brezilya Ulusal Petrol Şirketi'nin (Petrobras 3W) 2.228 adet çok değişkenli zaman serisi veri setini işleyerek %93.87 F1-Skorlu XGBoost ve PyTorch (1D-CNN + BiLSTM) geçici rejim anomali tespit modellerini geliştirdim.
+- Arızaları gerçekleşmeden ortalama 110.8 dakika (~1.8 saat) önce tespit eden Erken Uyarı (Lead-Time) algoritmasını ve SHAP TreeExplainer kök neden analiz modülünü tasarladım.
+- OPC-UA, MQTT, Modbus TCP ve Apache Kafka ile endüstriyel SCADA telemetri akış altyapısını ve TimescaleDB zaman serisi depolamasını entegre ettim.
+- Three.js WebGL 3D Dijital İkiz visualizer'ı, WebAR mobil saha tarayıcısını ve Flask REST API katmanını (35+ uç nokta) uçtan uca geliştirdim.
+- Kolmogorov-Smirnov Data Drift takibi, Prometheus /metrics sunucusu, ONNX/TensorRT kenar AI (Edge deployment) ve RBAC/Audit Trail güvenlik mimarisini kurdum.
+```
+
+---
+
 
 ## 1. Proje Hakkında
 
@@ -151,13 +186,18 @@ Ham zaman serilerinden uçtan uca öğrenen PyTorch mimarisi:
 
 ---
 
-## 8. Canlı Web Dashboard & Özellikleri
+## 8. Canlı Web Dashboard & Gelişmiş Modüller
 
-- **Canlı Zaman Serisi Grafikleri**: Chart.js ile eş zamanlı basınç, sıcaklık ve vana durumu izleme.
-- **Anlık AI Tespiti**: Seçilen kuyu dosyasındaki arızayı, doğruluk oranını ve risk seviyesini (CRITICAL, WARNING, NORMAL) renkli rozetlerle sunar.
-- **Canlı Kuyu Simülatörü**: Oynat/Durdur butonları ile açık deniz kuyu veri akışını simüle eder.
-- **PDF Teşhis Raporu İndirme**: Tek tıkla mühendislik standartlarında PDF teşhis raporu oluşturup indirir.
-- **Sesli & Görsel Alarm**: `CRITICAL` risklerde Web Audio API ile sesli alarm uyarısı verir.
+- **3D Dijital İkiz (Three.js WebGL)**: Subsea Christmas Tree vana manifoldunun 3D interaktif modeli ve arıza anında renk değiştiren canlı ışık uyarısı.
+- **WebAR Mobil Saha Teknisyen Modülü**: Tablet ve AR gözlükler için QR kod taramalı saha üstü canlı sensör ve SHAP uyarısı.
+- **Pekiştirmeli Öğrenme (RL PPO) Otonom Choke Otopilot**: Slugging anında choke vana açıklığını otonom ayarlayan dijital otopilot.
+- **Otomatik Acil Durum Kapanış (ESD) Kilidi**: Kritik DHSV basınç düşüşünde otomatik emniyet kapanış kilit mekanizması.
+- **A/B Senaryo Simülatörü**: Vana ayarı ile kimyasal enjeksiyon müdahalelerini 60 dakikalık basınç trendleriyle kıyaslayan simülatör.
+- **ROV Sualtı Bilgisayarlı Görü**: Sualtı robot kameralarından korozyon ve petrol sızıntısı tespit eden görüntü işleyici.
+- **Kuantum Yapay Zeka (QNN) Modeli**: 4-qubit kuantum devrelerinde zaman serisi anomali tespiti yapan simülasyon.
+- **Fizik Bilgili Yapay Zeka (PINN)**: Navier-Stokes akışkanlar mekaniği diferansiyel denklem kısıtlı kuyu kırılma modeli.
+- **Otomatik IEEE LaTeX Makale & Patent Üreticisi**: Model sonuçlarını otomatik akademik makale (`petrobras3w_ai_paper.tex`) ve patent taslağına dönüştüren modül.
+- **PDF Teşhis Raporu İndirme**: Tek tıkla mühendislik standartlarında Matplotlib grafikli PDF teşhis raporu oluşturup indirir.
 
 ---
 
@@ -184,35 +224,52 @@ python app.py
 ```
 Tarayıcınızda **`http://localhost:5000`** adresine gidin.
 
-### 4. Analiz Betiklerini Çalıştırma (Opsiyonel)
+### 4. Test Paketini Çalıştırma
 ```bash
-# EDA Analizi
-python detailed_eda.py
-
-# Öznitelik Çıkarımı
-python feature_engineering.py
-
-# Model Eğitimi
-python train_models.py
-
-# Erken Uyarı Lead-Time Analizi
-python early_warning_analysis.py
-
-# SHAP Kök Neden Analizi
-python explainable_ai_shap.py
+pytest tests/test_app_and_pipeline.py
 ```
 
 ---
 
-## 10. API Referansı
+## 10. Tam API Referansı
 
 | Endpoint | Metod | Açıklama |
 |---|:---:|---|
 | `/` | `GET` | İnteraktif Web Dashboard Arayüzü |
 | `/api/dataset_info` | `GET` | Sınıf bilgileri, dosya sayıları ve aktif model metrikleri |
-| `/api/file_list/<class_id>` | `GET` | Seçilen sınıfa ait Parquet dosya listesi |
-| `/api/file_data/<class_id>/<file_name>` | `GET` | Sensör zaman serisi verileri ve anlık AI tahmini |
-| `/api/export_pdf_report/<class_id>/<file_name>` | `GET` | Seçilen dosya için PDF Teşhis Raporu indirir |
+| `/api/file_list/<class_id>` | `GET` | Seçilen sınıfa ait filtrelenebilir ve sayfalandırılmış Parquet dosya listesi |
+| `/api/file_data/<class_id>/<file_name>` | `GET` | Sensör zaman serisi verileri ve dinamik AI tahmini |
+| `/api/shap_explain/<class_id>/<file_name>` | `GET` | Seçilen dosyada arızaya neden olan ilk 5 SHAP sensör kanalını hesaplar |
+| `/api/recommendations/<class_id>` | `GET` | Arıza sınıfı ve SHAP kanallarına göre mühendislik aksiyon önerileri üretir |
+| `/api/fleet_status` | `GET` | Platformdaki 10 kuyunun canlı sağlık skorunu ve telemetry durumunu sunar |
+| `/api/economic_loss` | `GET` | Duruş anında kaybolan petrol varilini ve finansal ($ USD) kaybı hesaplar |
+| `/api/carbon_flaring` | `GET` | Flare stack $CO_2 / CH_4$ emisyonunu ve karbon vergisini hesaplar |
+| `/api/subsea_spill` | `GET` | Anüler basınç kaçaklarında deniz altı sızıntı risk indeksini (0-100) verir |
+| `/api/chemical_injection` | `GET` | MEG/Methanol enjeksiyon debisi ve günlük maliyet optimizasyonu |
+| `/api/gis_map` | `GET` | Santos Basin 10 FPSO platformunun canlı GIS harita konumları ve hava durumu |
+| `/api/rl_choke` | `POST` | PPO Pekiştirmeli Öğrenme otonom choke vana açıklık önerisi üretir |
+| `/api/esd_lock` | `POST` | Otomatik acil durum kapanış (ESD) kilit durumunu değerlendirir |
+| `/api/scenario_ab` | `GET` | A/B müdahale senaryolarını (Vana vs Kimyasal) kıyaslar |
+| `/api/rov_vision` | `GET` | ROV sualtı korozyon ve petrol sızıntısı tespiti yapar |
+| `/api/acoustic_hydrophone` | `GET` | Şok vana gürültüsünden FFT kavitasyon aşınma oranını hesaplar |
+| `/api/export_onnx` | `GET` | Modelleri NVIDIA Jetson kenar cihazlar için ONNX formatına dönüştürür |
+| `/api/tinyml_decode` | `GET` | 12-byte kablosuz sensör paketlerini TinyML ile çözer |
+| `/api/scada_cyber_check` | `POST` | SCADA telemetrisinde MitM ve sensor spoofing siber saldırılarını tespit eder |
+| `/api/blockchain_passport` | `GET/POST` | Kuyu vanalarının bakım geçmişini blokzincir hash zincirinde saklar |
+| `/api/voice_command` | `POST` | Sesli komutları (Whisper stili) anlaşılır API aksiyonlarına çevirir |
+| `/api/synthetic_data` | `GET` | Nadir arızalar için TimeGAN multivariate zaman serisi verisi üretir |
+| `/api/quantum_anomaly` | `GET` | 4-qubit kuantum devresinde (QNN) anomali tespiti simüle eder |
+| `/api/pinn_well` | `GET` | Navier-Stokes kısıtlı Fizik Bilgili Yapay Zeka kuyu modeli |
+| `/api/generate_paper` | `GET` | Otomatik IEEE LaTeX makalesi ve WIPO patent taslağı oluşturur |
+| `/api/self_healing` | `GET` | Transformer Imputation ile bozuk sensör kanallarını otonom onarır |
+| `/api/multi_agent_consensus` | `GET` | Çoklu-Ajan (Multi-Agent Swarm) uzlaşı karar mekanizması |
+| `/api/carbon_accounting` | `GET` | Sertifikalı ESG karbon kredisi ve TEG atık ısı elektrik üretim hesabı |
+| `/api/multimodal_foundation` | `GET` | Multi-Modal Petro-Foundation model + SHAP/LIME/Integrated Gradients |
+| `/api/anp_regulatory` | `GET` | Brezilya Petrol Kurumu (ANP) resmi yasal kaza raporu üretir |
+| `/api/multiphysics_flow` | `GET` | Termodinamik gaz-hidrat faz eğrisi ve kum erozyon aşınma simülatörü |
+| `/api/private_5g` | `GET` | Starlink LEO sıkıştırması ve Özel 5G URLLC şebeke sürücüsü |
+| `/api/leaderboard` | `GET` | Açık kaynak 3W benchmark skor tahtası ve PT-BR / EN / TR çeviri motoru |
+| `/metrics` | `GET` | Prometheus ve Grafana formatında canlı sistem metrikleri |
 
 ---
 

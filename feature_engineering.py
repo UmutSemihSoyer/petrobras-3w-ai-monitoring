@@ -113,15 +113,28 @@ def extract_features_from_df(df, window_size=60, step_size=30):
         
     return pd.DataFrame(rows)
 
-def process_all_dataset():
+from concurrent.futures import ProcessPoolExecutor, as_completed
+
+def _process_single_file(args):
+    file_path, class_id = args
+    try:
+        df = pd.read_parquet(file_path)
+        feat_df = extract_features_from_df(df, window_size=120, step_size=60)
+        if not feat_df.empty:
+            feat_df['file_name'] = os.path.basename(file_path)
+            feat_df['source_folder'] = class_id
+            return feat_df
+    except Exception:
+        pass
+    return None
+
+def process_all_dataset(max_files_per_class=None):
     print("=" * 60)
-    print(" STEP 1: FEATURE ENGINEERING & DATASET PREPROCESSING ")
+    print(" STEP 1: PARALLEL FEATURE ENGINEERING & DATASET PREPROCESSING ")
     print("=" * 60)
     
     start_time = time.time()
-    all_feature_dfs = []
-    
-    total_processed_files = 0
+    task_list = []
     
     for c in range(10):
         folder_path = os.path.join(DATASET_DIR, str(c))
@@ -129,27 +142,35 @@ def process_all_dataset():
             continue
             
         files = glob.glob(os.path.join(folder_path, "*.parquet"))
-        print(f"Processing Class {c} ({classes_info[c]}): {len(files)} files...")
-        
-        # Limit per class to balance dataset and ensure fast extraction
-        # Sample up to 50 files for Class 0 (normal), and up to 40 for others
-        max_files = 50 if c == 0 else 40
-        selected_files = files[:max_files]
-        
-        for f in selected_files:
-            try:
-                df = pd.read_parquet(f)
-                feat_df = extract_features_from_df(df, window_size=120, step_size=60)
-                feat_df['file_name'] = os.path.basename(f)
-                feat_df['source_folder'] = c
-                all_feature_dfs.append(feat_df)
-                total_processed_files += 1
-            except Exception as e:
-                print(f"Error processing {f}: {e}")
-                
-    final_df = pd.concat(all_feature_dfs, ignore_index=True)
+        if max_files_per_class is not None:
+            files = files[:max_files_per_class]
+            
+        print(f"Queuing Class {c} ({classes_info[c]}): {len(files)} files...")
+        for f in files:
+            task_list.append((f, c))
+            
+    print(f"\nTotal files queued for parallel feature extraction: {len(task_list)}")
     
-    # Fill any remaining NaNs with 0
+    all_feature_dfs = []
+    total_processed_files = 0
+    
+    # Process in parallel using CPU workers
+    num_workers = min(16, os.cpu_count() or 4)
+    print(f"Launching ProcessPoolExecutor with {num_workers} parallel workers...")
+    
+    with ProcessPoolExecutor(max_workers=num_workers) as executor:
+        futures = [executor.submit(_process_single_file, task) for task in task_list]
+        for future in as_completed(futures):
+            res_df = future.result()
+            if res_df is not None:
+                all_feature_dfs.append(res_df)
+                total_processed_files += 1
+                
+    if not all_feature_dfs:
+        print("No features extracted.")
+        return
+        
+    final_df = pd.concat(all_feature_dfs, ignore_index=True)
     final_df = final_df.fillna(0.0)
     
     output_path = os.path.join(PROCESSED_DIR, "extracted_features.parquet")
@@ -159,8 +180,8 @@ def process_all_dataset():
     final_df.head(100).to_csv(csv_path, index=False)
     
     elapsed = time.time() - start_time
-    print(f"\nFeature extraction completed in {elapsed:.2f} seconds.")
-    print(f"Processed files: {total_processed_files}")
+    print(f"\nParallel Feature extraction completed in {elapsed:.2f} seconds!")
+    print(f"Successfully processed files: {total_processed_files} / {len(task_list)}")
     print(f"Extracted feature dataset shape: {final_df.shape}")
     print(f"Saved feature matrix to: {output_path}")
     
@@ -169,4 +190,5 @@ def process_all_dataset():
     print(final_df['base_class'].value_counts().sort_index())
 
 if __name__ == "__main__":
-    process_all_dataset()
+    process_all_dataset(max_files_per_class=None)
+
